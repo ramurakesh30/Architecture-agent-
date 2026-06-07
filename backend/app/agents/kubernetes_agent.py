@@ -10,10 +10,10 @@ class KubernetesAgent:
 
     def analyze(self, request, result):
 
-        if request.kubernetes is None:
+        if request is None:
             return
 
-        k8s = request.kubernetes
+        k8s = request
 
         if not k8s.has_liveness_probe:
 
@@ -70,5 +70,84 @@ class KubernetesAgent:
                     category=Category.RELIABILITY,
                     severity=Severity.MEDIUM,
                     message="Memory limits not configured"
+                )
+            )
+        
+        if not k8s.has_hpa:
+
+            result.add_finding(
+                Finding(
+                    category=Category.SCALABILITY,
+                    severity=Severity.MEDIUM,
+                    message="No Horizontal Pod Autoscaler configured"
+                )
+            )
+
+            result.add_recommendation(
+                Recommendation(
+                    category=Category.SCALABILITY,
+                    message="Configure HPA for automatic scaling"
+                )
+            )
+        
+        if not k8s.has_ingress:
+
+            result.add_finding(
+                Finding(
+                    category=Category.AVAILABILITY,
+                    severity=Severity.LOW,
+                    message="No ingress resource detected"
+                )
+            )
+        
+        if k8s.replicas < 2:
+
+            result.add_finding(
+                Finding(
+                    category=Category.AVAILABILITY,
+                    severity=Severity.HIGH,
+                    message="Single replica deployment"
+                )
+            )
+
+            result.add_recommendation(
+                Recommendation(
+                    category=Category.AVAILABILITY,
+                    message="Use at least 3 replicas"
+                )
+            )
+        
+        for tag in k8s.image_tags:
+
+            if tag == "latest":
+
+                result.add_finding(
+                    Finding(
+                        category=Category.RELIABILITY,
+                        severity=Severity.MEDIUM,
+                        message="Container image uses latest tag"
+                    )
+                )
+
+                result.add_recommendation(
+                    Recommendation(
+                        category=Category.RELIABILITY,
+                        message="Use immutable version tags"
+                    )
+                )
+        if k8s.container_count > 3:
+
+            result.add_finding(
+                Finding(
+                    category=Category.SCALABILITY,
+                    severity=Severity.MEDIUM,
+                    message=f"Pod contains {k8s.container_count} containers"
+                )
+            )
+
+            result.add_recommendation(
+                Recommendation(
+                    category=Category.SCALABILITY,
+                    message="Reduce container count or split workloads"
                 )
             )

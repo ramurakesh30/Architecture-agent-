@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 
-from backend.app.api.v1.architecture import router
+from backend.app.api.v1.kubernetes import router
 
 app = FastAPI(
-    title="Architecture Agent"
+    title="Kubernetes Analyzer"
 )
 
 app.include_router(
