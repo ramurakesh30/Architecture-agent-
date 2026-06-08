@@ -1,4 +1,5 @@
 from reportlab.platypus import (
+Image,
 SimpleDocTemplate,
 Paragraph,
 Spacer,
@@ -87,7 +88,273 @@ class PdfReportService:
         elements.append(
             Spacer(1, 20)
         )
+        #
+        # ARCHITECTURE DIAGRAM
+        #
+        '''
+        elements.append(
+            Paragraph(
+                "Architecture Diagram",
+                styles["Heading1"]
+            )
+        )
 
+        elements.append(
+            Paragraph(
+                "Architecture Diagram",
+                styles["Heading1"]
+            )
+        )
+
+        elements.append(
+            Image(
+                report[
+                    "architecture_diagram_image"
+                ],
+                width=450,
+                height=250
+            )
+        )
+
+        elements.append(
+            Spacer(1, 20)
+        )
+        '''
+        elements.append(
+            Paragraph(
+                "Architecture Diagram",
+                styles["Heading1"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                "<pre>%s</pre>"
+                %
+                report[
+                    "architecture_diagram"
+                ].replace(
+                    "\n",
+                    "<br/>"
+                ),
+                styles["BodyText"]
+            )
+        )
+
+        elements.append(
+            Spacer(1, 20)
+        )
+        #
+        # AI ARCHITECTURE REVIEW
+        #
+
+        elements.append(
+            Paragraph(
+                "AI Architecture Assessment",
+                styles["Heading1"]
+            )
+        )
+
+        ai_review = report[
+            "ai_architecture_review"
+        ]
+
+        elements.append(
+            Paragraph(
+                "Executive Assessment",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                ai_review[
+                    "executive_assessment"
+                ],
+                styles["BodyText"]
+            )
+        )
+
+        elements.append(
+            Spacer(1, 15)
+        )
+
+        elements.append(
+            Paragraph(
+                "Top Priorities",
+                styles["Heading2"]
+            )
+        )
+
+        for priority in ai_review[
+            "top_priorities"
+        ]:
+
+            elements.append(
+                Paragraph(
+                    f"• {priority}",
+                    styles["BodyText"]
+                )
+            )
+
+        elements.append(
+            Spacer(1, 15)
+        )
+
+        elements.append(
+            Paragraph(
+                "Remediation Roadmap",
+                styles["Heading2"]
+            )
+        )
+
+        for step in ai_review[
+            "remediation_roadmap"
+        ]:
+
+            elements.append(
+                Paragraph(
+                    f"Initiative: {step.get('name', '')}",
+                    styles["Heading3"]
+                )
+            )
+
+            elements.append(
+                Paragraph(
+                    step.get(
+                        "description",
+                        ""
+                    ),
+                    styles["BodyText"]
+                )
+            )
+
+            elements.append(
+                Paragraph(
+                    f"Timeline: {step.get('timeline', '')}",
+                    styles["BodyText"]
+                )
+            )
+
+            elements.append(
+                Paragraph(
+                    "Implementation Steps:",
+                    styles["BodyText"]
+                )
+            )
+
+            for implementation_step in step.get(
+                "steps",
+                []
+            ):
+
+                elements.append(
+                    Paragraph(
+                        f"• {implementation_step}",
+                        styles["BodyText"]
+                    )
+                )
+
+            elements.append(
+                Spacer(1, 10)
+            )
+        #
+        # ARCHITECTURE DOCUMENTATION
+        #
+
+        elements.append(
+            Paragraph(
+                "Architecture Documentation",
+                styles["Heading1"]
+            )
+        )
+
+        documentation = report[
+            "architecture_documentation"
+        ]
+
+        print("Architecture Documentation:")
+        print(report["architecture_documentation"])
+
+        elements.append(
+            Paragraph(
+                "Overview",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                documentation[
+                    "overview"
+                ],
+                styles["BodyText"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                "Traffic Flow",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                documentation[
+                    "traffic_flow"
+                ],
+                styles["BodyText"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                "Scalability",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                documentation[
+                    "scalability"
+                ],
+                styles["BodyText"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                "Security",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                documentation[
+                    "security"
+                ],
+                styles["BodyText"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                "Operational Risks",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                documentation[
+                    "operational_risks"
+                ],
+                styles["BodyText"]
+            )
+        )
         #
         # CATEGORY SCORE TABLE
         #
@@ -414,7 +681,7 @@ class PdfReportService:
         elements.append(
             PageBreak()
         )
-
+        
         #
         # RECOMMENDATIONS
         #

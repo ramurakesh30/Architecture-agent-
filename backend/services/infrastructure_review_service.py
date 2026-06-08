@@ -13,6 +13,9 @@ from app.agents.architecture_insight_agent import (
 )
 
 from backend.services.dashboard_service import DashboardService
+
+from backend.services.diagram_renderer_service import DiagramRendererService
+
 from backend.services.finding_correlation_service import (
     FindingCorrelationService
 )
@@ -23,12 +26,27 @@ from backend.services.executive_summary_service import (
     ExecutiveSummaryService
 )
 
+from backend.services.architecture_diagram_service import (
+    ArchitectureDiagramService
+)
+
+from backend.services.architecture_documentation_service import (
+    ArchitectureDocumentationService
+)
 from backend.services.narrative_summary_service import (
     NarrativeSummaryService
 )
 
 from backend.services.dashboard_service import (
     DashboardService
+)
+
+from backend.services.ai_review_service import (
+    AIReviewService
+)
+
+from app.providers.provider_factory import (
+    ProviderFactory
 )
 
 class ArchitectureReviewService:
@@ -61,13 +79,34 @@ class ArchitectureReviewService:
             ExecutiveSummaryService()
         )
 
+        self.diagram_service = (
+            ArchitectureDiagramService()
+        )
+
+        self.diagram_renderer_service = (
+            DiagramRendererService()
+        )
+
         self.narrative_summary_service = (
             NarrativeSummaryService()
         )
 
+
         self.dashboard_service = (
             DashboardService()
        )
+        
+        provider = (
+            ProviderFactory.create()
+        )
+
+        self.ai_review_service = (
+            AIReviewService(provider)
+        )
+
+        self.architecture_documentation_service = (
+            ArchitectureDocumentationService(self.ai_review_service)
+        )
     
     def analyze(
         self,
@@ -116,6 +155,7 @@ class ArchitectureReviewService:
         summary = self.aggregator.summarize(
             package
         )
+
         self.infrastructure_agent.analyze(
             package,
             summary,
@@ -129,9 +169,44 @@ class ArchitectureReviewService:
         
         result.calculate_overall_score()
 
+        findings = [
+
+            f.message
+
+            for f in result.findings
+        ]
+
+        ai_architecture_review = (
+            self.ai_review_service
+            .generate_architecture_review(
+                findings
+            )
+        )
+
         summary_report = (
             self.executive_summary_service.generate(
                 result
+            )
+        )
+
+        diagram = (
+            self.diagram_service.generate(
+                summary
+            )
+        )
+
+       # diagram_image = (
+       #     self.diagram_renderer_service
+       #     .render(
+       #         diagram,
+       #        "architecture.png"
+        #    )
+        #)
+
+        architecture_documentation = (
+            self.architecture_documentation_service
+            .generate(
+                summary
             )
         )
 
@@ -170,6 +245,15 @@ class ArchitectureReviewService:
             "executive_summary":
                 summary_report["executive_summary"],
             
+            "architecture_diagram":
+                diagram,
+            
+           # "architecture_diagram_image":
+           # diagram_image,
+            
+            "architecture_documentation":
+                architecture_documentation,
+            
             "narrative_summary":
                 narrative_summary,
 
@@ -203,5 +287,8 @@ class ArchitectureReviewService:
 
             "recommendations":
                 [vars(r) for r in result.recommendations],
+            
+            "ai_architecture_review":
+                ai_architecture_review
 
         }
