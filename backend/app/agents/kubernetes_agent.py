@@ -61,6 +61,24 @@ class KubernetesAgent:
                     message="CPU limits not configured"
                 )
             )
+        if not k8s.cpu_request:
+
+            result.add_finding(
+                Finding(
+                    category=Category.RELIABILITY,
+                    severity=Severity.MEDIUM,
+                    message="CPU requests not configured"
+                )
+            )
+        if not k8s.memory_request:
+
+            result.add_finding(
+                Finding(
+                    category=Category.RELIABILITY,
+                    severity=Severity.MEDIUM,
+                    message="Memory requests not configured"
+                )
+            )
 
         if not k8s.memory_limit:
 
@@ -72,7 +90,41 @@ class KubernetesAgent:
                     message="Memory limits not configured"
                 )
             )
-        
+        if not k8s.has_security_context:
+
+            result.add_finding(
+                Finding(
+                    category=Category.SECURITY,
+                    severity=Severity.HIGH,
+                    message="No security context configured"
+                )
+            )
+
+            result.add_recommendation(
+                Recommendation(
+                    category=Category.SECURITY,
+                    message="Run containers as non-root"
+                )
+            )
+        if not k8s.has_affinity_rules:
+
+            result.add_finding(
+                Finding(
+                    category=Category.AVAILABILITY,
+                    severity=Severity.MEDIUM,
+                    message="No pod anti-affinity configured"
+                )
+            )
+        if not k8s.has_tolerations:
+
+            result.add_finding(
+                Finding(
+                    category=Category.SCALABILITY,
+                    severity=Severity.LOW,
+                    message="No tolerations configured"
+                )
+            )
+                
         if not k8s.has_hpa:
 
             result.add_finding(
