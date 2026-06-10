@@ -16,3 +16,8 @@ class Settings:
         "OLLAMA_MODEL",
         "llama3.2:3b"
     )
+
+    EMBEDDING_MODEL = os.getenv(
+        "EMBEDDING_MODEL",
+        "all-MiniLM-L6-v2"
+    )

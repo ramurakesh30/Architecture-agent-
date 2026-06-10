@@ -12,13 +12,16 @@ from app.agents.architecture_insight_agent import (
     ArchitectureInsightAgent
 )
 
+from backend.services.benchmark_service import BenchmarkService
 from backend.services.dashboard_service import DashboardService
 
 from backend.services.diagram_renderer_service import DiagramRendererService
 
+from backend.services.drift_detection_service import DriftDetectionService
 from backend.services.finding_correlation_service import (
     FindingCorrelationService
 )
+from backend.services.history_service import HistoryService
 from backend.services.infrastructure_aggregator import (
     InfrastructureAggregator
 )
@@ -47,6 +50,13 @@ from backend.services.ai_review_service import (
 
 from app.providers.provider_factory import (
     ProviderFactory
+)
+from backend.services.rag_service import RAGService
+from backend.services.remediation_generator_service import RemediationGeneratorService
+from backend.services.vector_store_service import VectorStoreService
+from backend.app.langgraph.review_graph import review_graph
+from backend.services.risk_scoring_service import (
+    RiskScoringService
 )
 
 class ArchitectureReviewService:
@@ -100,12 +110,44 @@ class ArchitectureReviewService:
             ProviderFactory.create()
         )
 
+        self.vector_store_service = (
+            VectorStoreService()
+        )
+
+        self.vector_store_service.index_documents()
+
+        self.rag_service = (
+            RAGService(
+                self.vector_store_service
+            )
+        )
+        
+        self.review_graph = (
+            review_graph
+        )
+
         self.ai_review_service = (
             AIReviewService(provider)
         )
 
+        self.risk_scoring_service = (
+            RiskScoringService()
+        )
+
         self.architecture_documentation_service = (
             ArchitectureDocumentationService(self.ai_review_service)
+        )
+
+        self.benchmark_service = (
+            BenchmarkService()
+        )
+
+        self.history_service = (
+            HistoryService()
+        )
+
+        self.drift_service = (
+            DriftDetectionService()
         )
     
     def analyze(
@@ -174,13 +216,53 @@ class ArchitectureReviewService:
             f.message
 
             for f in result.findings
-        ]
+        ][:3]
+
+        self.remediation_generator_service = (
+            RemediationGeneratorService(
+                ProviderFactory.create()
+            )
+        )
+
+        risk_scores = (
+            self.risk_scoring_service.calculate(
+                [
+                    f.message
+                    for f in result.findings
+                ]
+            )
+        )
+
+        knowledge_context = (
+            self.rag_service.enrich(
+                result.findings
+            )
+        )
+
+        remediation_code = (
+            self.remediation_generator_service
+            .generate(
+                findings,
+                knowledge_context
+            )
+        )
+        
+        graph_result = (
+            self.review_graph.invoke(
+                {
+                    "findings":
+                        result.findings,
+                    
+                    "knowledge_context":
+                        knowledge_context
+                }
+            )
+        )
 
         ai_architecture_review = (
-            self.ai_review_service
-            .generate_architecture_review(
-                findings
-            )
+            graph_result[
+                "final_review"
+            ]
         )
 
         summary_report = (
@@ -208,6 +290,30 @@ class ArchitectureReviewService:
             .generate(
                 summary
             )
+        )
+
+        benchmark_result = (
+            self.benchmark_service.benchmark(
+                result.findings
+            )
+        )
+
+        previous_findings = (
+
+            self.history_service
+            .load_latest()
+        )
+
+        drift_result = (
+
+            self.drift_service.compare(
+                previous_findings,
+                result.findings
+            )
+        )
+
+        self.history_service.save(
+            result.findings
         )
 
         narrative_summary = (
@@ -265,6 +371,9 @@ class ArchitectureReviewService:
             
             "dashboard": dashboard,
 
+            "risk_scores":
+                risk_scores,
+
             "category_scores":
                 result.category_scores,
             
@@ -289,6 +398,15 @@ class ArchitectureReviewService:
                 [vars(r) for r in result.recommendations],
             
             "ai_architecture_review":
-                ai_architecture_review
+                ai_architecture_review,
+            
+            "remediation_code":
+                remediation_code,
+            
+            "benchmark_result":
+                benchmark_result,
+            
+            "drift_result":
+                drift_result
 
         }

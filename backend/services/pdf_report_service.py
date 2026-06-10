@@ -1,5 +1,7 @@
+
 from reportlab.platypus import (
 Image,
+Preformatted,
 SimpleDocTemplate,
 Paragraph,
 Spacer,
@@ -11,7 +13,23 @@ TableStyle
 from reportlab.lib import colors
 
 from reportlab.lib.styles import (
+ParagraphStyle,
 getSampleStyleSheet
+)
+
+styles = getSampleStyleSheet()
+code_style = ParagraphStyle(
+    "Code",
+
+    parent=styles["BodyText"],
+
+    fontName="Courier",
+
+    fontSize=7,
+
+    leading=8,
+
+    leftIndent=20,
 )
 
 class PdfReportService:
@@ -155,7 +173,7 @@ class PdfReportService:
             )
         )
 
-        ai_review = report[
+        ai_architecture_review = report[
             "ai_architecture_review"
         ]
 
@@ -168,7 +186,7 @@ class PdfReportService:
 
         elements.append(
             Paragraph(
-                ai_review[
+                ai_architecture_review[
                     "executive_assessment"
                 ],
                 styles["BodyText"]
@@ -186,7 +204,7 @@ class PdfReportService:
             )
         )
 
-        for priority in ai_review[
+        for priority in ai_architecture_review[
             "top_priorities"
         ]:
 
@@ -208,7 +226,7 @@ class PdfReportService:
             )
         )
 
-        for step in ai_review[
+        for step in ai_architecture_review[
             "remediation_roadmap"
         ]:
 
@@ -258,10 +276,72 @@ class PdfReportService:
             elements.append(
                 Spacer(1, 10)
             )
+        
+        #
+        # REMEDIATION CODE
+        #
+        elements.append(
+            Paragraph(
+                "Remediation Plan",
+                styles["Heading1"]
+            )
+        )
+
+        for item in report[
+            "remediation_code"
+        ][
+            "remediations"
+        ]:
+
+            elements.append(
+                Paragraph(
+                    f"Finding: {item['finding']}",
+                    styles["Heading3"]
+                )
+            )
+
+            elements.append(
+                Paragraph(
+                    f"Priority: {item['priority']}",
+                    styles["BodyText"]
+                )
+            )
+
+            elements.append(
+                Paragraph(
+                    f"Recommended Action: {item['remediation']}",
+                    styles["BodyText"]
+                )
+            )
+
+            elements.append(
+                Paragraph(
+                    "Implementation Steps:",
+                    styles["Heading4"]
+                )
+            )
+
+            for step in item[
+                "implementation_steps"
+            ]:
+
+                elements.append(
+                    Paragraph(
+                        f"• {step}",
+                        styles["BodyText"]
+                    )
+                )
+
+            elements.append(
+                Spacer(
+                    1,
+                    10
+                )
+            )
         #
         # ARCHITECTURE DOCUMENTATION
         #
-
+        
         elements.append(
             Paragraph(
                 "Architecture Documentation",
@@ -273,8 +353,8 @@ class PdfReportService:
             "architecture_documentation"
         ]
 
-        print("Architecture Documentation:")
-        print(report["architecture_documentation"])
+        #print("Architecture Documentation:")
+        #print(report["architecture_documentation"])
 
         elements.append(
             Paragraph(
@@ -353,6 +433,379 @@ class PdfReportService:
                     "operational_risks"
                 ],
                 styles["BodyText"]
+            )
+        )
+
+        elements.append(
+            Spacer(
+                1,
+                10
+            )
+        )
+        #
+        # RISK SCORE
+        #
+        risk_scores = report[
+            "risk_scores"
+        ]
+        
+        elements.append(
+            Paragraph(
+                "Architecture Health Assessment",
+                styles["Heading1"]
+            )
+        )
+
+        health_data = [
+
+            ["Metric", "Value"],
+
+            [
+                "Overall Score",
+                f"{risk_scores['overall_score']}/100"
+            ],
+
+            [
+                "Maturity Level",
+                risk_scores[
+                    "maturity_level"
+                ]
+            ],
+
+            [
+                "Risk Level",
+                risk_scores[
+                    "risk_level"
+                ]
+            ]
+        ]
+
+        health_table = Table(
+            health_data,
+            colWidths=[200, 200]
+        )
+
+        health_table.setStyle(
+            TableStyle([
+
+                ("GRID",
+                (0, 0),
+                (-1, -1),
+                1,
+                colors.black),
+
+                ("BACKGROUND",
+                (0, 0),
+                (-1, 0),
+                colors.lightgrey)
+            ])
+        )
+
+        elements.append(
+            health_table
+        )
+
+        elements.append(
+            Spacer(1, 20)
+        )
+
+        if (
+            risk_scores["overall_score"]
+            >= 80
+        ):
+
+            health_summary = (
+                "The architecture follows most "
+                "recommended cloud best practices."
+            )
+
+        elif (
+            risk_scores["overall_score"]
+            >= 60
+        ):
+
+            health_summary = (
+                "The architecture contains moderate "
+                "risks and improvement opportunities."
+            )
+
+        else:
+
+            health_summary = (
+                "The architecture contains significant "
+                "security, reliability, or scalability risks."
+            )
+        
+        elements.append(
+            Paragraph(
+                health_summary,
+                styles["Italic"]
+            )
+        )
+
+        elements.append(
+            Spacer(1, 20)
+        )
+        #
+        # BENCHMARK RESULT
+        #
+
+        print(report["benchmark_result"])
+        benchmark_result = report[
+            "benchmark_result"
+        ]
+
+        elements.append(
+            Paragraph(
+                "Architecture Benchmarking",
+                styles["Heading1"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                f"Overall Benchmark Score: "
+                f"{benchmark_result['overall_score']}%",
+                styles["Heading2"]
+            )
+        )
+
+        framework_data = [
+
+            ["Framework", "Score"]
+        ]
+
+        for framework in benchmark_result[
+            "frameworks"
+        ]:
+
+            framework_data.append(
+
+                [
+                    framework["name"],
+
+                    f"{framework['score']}%"
+                ]
+            )
+        
+        framework_table = Table(
+            framework_data,
+            colWidths=[250, 100]
+        )
+
+        framework_table.setStyle(
+            TableStyle([
+
+                ("GRID",
+                (0, 0),
+                (-1, -1),
+                1,
+                colors.black),
+
+                ("BACKGROUND",
+                (0, 0),
+                (-1, 0),
+                colors.lightgrey)
+            ])
+        )
+
+        elements.append(
+            framework_table
+        )
+
+        elements.append(
+            Spacer(1, 20)
+        )
+        
+        #
+        # FAILED CONTROLS
+        #
+
+        elements.append(
+            Paragraph(
+                "Failed Controls",
+                styles["Heading2"]
+            )
+        )
+
+        for control in benchmark_result[
+            "failed_controls"
+        ]:
+
+            elements.append(
+                Paragraph(
+                    f"• {control}",
+                    styles["BodyText"]
+                )
+            )
+        
+        elements.append(
+            Paragraph(
+                "No failed controls detected.",
+                styles["BodyText"]
+            )
+        )
+
+        elements.append(
+            Spacer(
+                1,
+                20
+            )
+        )
+
+        #
+        # DRIFT RESULTS
+        #
+        
+        drift_result = report.get(
+            "drift_result",
+            {
+                "drift_detected": False,
+                "added_findings": [],
+                "removed_findings": []
+            }
+        )
+
+        elements.append(
+            Paragraph(
+                "Architecture Drift Analysis",
+                styles["Heading1"]
+            )
+        )
+
+        drift_data = [
+
+            ["Metric", "Value"],
+
+            [
+                "Drift Detected",
+                "Yes"
+                if drift_result[
+                    "drift_detected"
+                ]
+                else
+                "No"
+            ]
+        ]
+
+        drift_table = Table(
+            drift_data,
+            colWidths=[200, 150]
+        )
+
+        drift_table.setStyle(
+            TableStyle([
+
+                ("GRID",
+                (0, 0),
+                (-1, -1),
+                1,
+                colors.black),
+
+                ("BACKGROUND",
+                (0, 0),
+                (-1, 0),
+                colors.lightgrey)
+            ])
+        )
+
+        elements.append(
+            drift_table
+        )
+
+        elements.append(
+            Spacer(1, 20)
+        )
+
+        elements.append(
+            Paragraph(
+                "New Findings",
+                styles["Heading2"]
+            )
+        )
+
+        if drift_result[
+            "added_findings"
+        ]:
+
+            for finding in drift_result[
+                "added_findings"
+            ]:
+
+                elements.append(
+                    Paragraph(
+                        f"• {finding}",
+                        styles["BodyText"]
+                    )
+                )
+
+        else:
+
+            elements.append(
+                Paragraph(
+                    "No new findings detected.",
+                    styles["BodyText"]
+                )
+            )
+        
+        elements.append(
+            Paragraph(
+                "Resolved Findings",
+                styles["Heading2"]
+            )
+        )
+
+        if drift_result[
+            "removed_findings"
+        ]:
+
+            for finding in drift_result[
+                "removed_findings"
+            ]:
+
+                elements.append(
+                    Paragraph(
+                        f"• {finding}",
+                        styles["BodyText"]
+                    )
+                )
+
+        else:
+
+            elements.append(
+                Paragraph(
+                    "No findings were resolved.",
+                    styles["BodyText"]
+                )
+            )
+        
+        if drift_result[
+            "drift_detected"
+        ]:
+
+            summary = (
+                "Architecture drift was detected "
+                "between the previous and current "
+                "assessment."
+            )
+
+        else:
+
+            summary = (
+                "No architecture drift was detected."
+            )
+
+        elements.append(
+            Paragraph(
+                summary,
+                styles["Italic"]
+            )
+        )
+
+        elements.append(
+            Spacer(
+                1,
+                20
             )
         )
         #
@@ -441,6 +894,8 @@ class PdfReportService:
         elements.append(
             Spacer(1, 20)
         )
+
+        
 
         #
         # RISK BREAKDOWN TABLE

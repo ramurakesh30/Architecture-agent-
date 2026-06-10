@@ -23,7 +23,8 @@ class OllamaProvider(
 
     def generate_architecture_review(
         self,
-        findings
+        findings,
+        knowledge_context
     ):
         
         findings_text = "\n".join(
@@ -33,17 +34,25 @@ class OllamaProvider(
         prompt = f"""
 You are a Principal Cloud Architect.
 
-Review these architecture findings:
+Review these architecture findings.
+
+ARCHITECTURE FINDINGS:
 
 {findings_text}
 
+RELEVANT BEST PRACTICES:
+
+{knowledge_context}
+
 IMPORTANT:
 
-1. Return ONLY valid JSON.
-2. Do not include markdown.
-3. Do not include explanations outside JSON.
-4. top_priorities must be an array of strings.
-5. remediation_roadmap must be an array of objects.
+1. Use the provided best-practice knowledge when creating recommendations.
+2. Reference industry-standard approaches where appropriate.
+3. Return ONLY valid JSON.
+4. Do not include markdown.
+5. Do not include explanations outside JSON.
+6. top_priorities must be an array of strings.
+7. remediation_roadmap must be an array of objects.
 
 Example:
 
@@ -74,6 +83,14 @@ Example:
     }}
   ]
 }}
+
+Generate:
+
+1. Executive Assessment
+2. Top Priorities
+3. Remediation Roadmap
+
+Use the best-practice knowledge provided above when generating recommendations.
 """
 
         response = chat(

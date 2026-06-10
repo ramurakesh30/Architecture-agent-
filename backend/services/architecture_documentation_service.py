@@ -19,111 +19,123 @@ class ArchitectureDocumentationService:
     ):
 
         prompt = f"""
-You are a senior cloud architect.
+You are a Senior Cloud Architect.
 
-Generate architecture documentation.
+Generate a concise architecture assessment.
 
 Infrastructure:
 
-Deployments:
-{summary.total_deployments}
+Deployments: {summary.total_deployments}
+Replicas: {summary.total_replicas}
+Has Ingress: {summary.has_ingress}
+Uses HPA: {summary.uses_hpa}
+Public Security Groups: {summary.public_security_groups}
+Public S3 Buckets: {summary.public_s3_buckets}
 
-Replicas:
-{summary.total_replicas}
-
-Has Ingress:
-{summary.has_ingress}
-
-Uses HPA:
-{summary.uses_hpa}
-
-Public Security Groups:
-{summary.public_security_groups}
-
-Public S3 Buckets:
-{summary.public_s3_buckets}
-
-IMPORTANT:
-
-Return ONLY JSON.
-
-All values MUST be strings.
-
-Do NOT use arrays.
-Do NOT use nested objects.
-
-Example:
-
-{{
-  "overview":
-    "The platform consists of three Kubernetes deployments exposed through an ingress controller.",
-
-  "traffic_flow":
-    "External HTTP traffic enters through the ingress and is routed to application deployments.",
-
-  "scalability":
-    "Horizontal Pod Autoscaling is not configured, limiting automatic scaling.",
-
-  "security":
-    "Public security groups and public cloud storage introduce significant security risks.",
-
-  "operational_risks":
-    "Single points of failure and missing autoscaling may affect application availability."
-}}
-
-Generate documentation now.
+Return only a short architecture assessment paragraph.
+Do not use headings.
+Do not use markdown.
+Do not use JSON.
 """
 
         response = self.ai_review_service.ask(
             prompt
         )
 
-        match = re.search(
-            r'\{.*\}',
-            response,
-            re.DOTALL
+        response = (
+            response
+            .replace("```json", "")
+            .replace("```", "")
+            .strip()
         )
+        print("DOCUMENTATION RESPONSE")
+        print(response)
 
-        if match:
+        json_start = response.find("{")
 
-            try:
+        if json_start >= 0:
 
-                result = json.loads(
-                    match.group(0)
-                )
+            response = response[
+                json_start:
+            ]
+        try:
 
-                #
-                # Force all values to strings
-                #
+            decoder = json.JSONDecoder()
 
-                for key in result:
+            result, idx = decoder.raw_decode(
+                response
+            )
 
-                    if not isinstance(
-                        result[key],
-                        str
-                    ):
+            for key in result:
 
-                        result[key] = str(
-                            result[key]
-                        )
+                if not isinstance(
+                    result[key],
+                    str
+                ):
 
-                return result
+                    result[key] = str(
+                        result[key]
+                    )
 
-            except Exception as ex:
+            return result
 
-                print(
-                    f"JSON parse failed: {ex}"
-                )
+        except Exception as ex:
 
-        return {
+            print(
+                f"JSON parse failed: {ex}"
+            )
 
-            "overview": response,
+            print(response)
 
-            "traffic_flow": "",
+            return {
 
-            "scalability": "",
+                "overview": response,
 
-            "security": "",
+                "traffic_flow":
+                    f"Traffic enters through ingress and is routed across "
+                    f"{summary.total_deployments} deployments.",
 
-            "operational_risks": ""
-        }
+                "scalability":
+                    f"HPA enabled: {summary.uses_hpa}. "
+                    f"Total replicas: {summary.total_replicas}.",
+
+                "security":
+                    f"Public security groups: "
+                    f"{summary.public_security_groups}. "
+                    f"Public S3 buckets: "
+                    f"{summary.public_s3_buckets}.",
+
+                "operational_risks":
+                    self._generate_operational_risks(
+                        summary
+                    )
+            }
+        
+    def _generate_operational_risks(
+        self,
+        summary
+    ):
+
+        risks = []
+
+        if not summary.uses_hpa:
+
+            risks.append(
+                "Autoscaling is not configured."
+            )
+
+        if summary.total_replicas <= 1:
+
+            risks.append(
+                "Single replica deployment detected."
+            )
+
+        if summary.public_security_groups > 0:
+
+            risks.append(
+                "Public network exposure exists."
+            )
+
+        return " ".join(
+            risks
+        )

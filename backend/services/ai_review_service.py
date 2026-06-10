@@ -6,13 +6,15 @@ class AIReviewService:
 
     def generate_architecture_review(
         self,
-        findings
+        findings,
+        knowledge_context=""
     ):
 
          return (
             self.provider
             .generate_architecture_review(
-                findings
+                findings,
+                knowledge_context
             )
         )
     def ask(
