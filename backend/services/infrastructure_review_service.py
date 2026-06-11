@@ -12,7 +12,10 @@ from app.agents.architecture_insight_agent import (
     ArchitectureInsightAgent
 )
 
+from backend.services.architecture_recommendation_service import ArchitectureRecommendationService
 from backend.services.benchmark_service import BenchmarkService
+from backend.services.compliance_service import ComplianceService
+from backend.services.cost_optimization_service import CostOptimizationService
 from backend.services.dashboard_service import DashboardService
 
 from backend.services.diagram_renderer_service import DiagramRendererService
@@ -148,6 +151,20 @@ class ArchitectureReviewService:
 
         self.drift_service = (
             DriftDetectionService()
+        )
+
+        self.cost_optimization_service = (
+            CostOptimizationService()
+        )
+
+        self.compliance_service = (
+            ComplianceService()
+        )
+
+        self.recommendation_service = (
+            ArchitectureRecommendationService(
+                provider
+            )
         )
     
     def analyze(
@@ -312,8 +329,37 @@ class ArchitectureReviewService:
             )
         )
 
+        cost_result = (
+            self.cost_optimization_service.analyze(
+                result.findings
+            )
+        )
+
+        compliance_result = (
+            self.compliance_service.assess(
+                result.findings
+            )
+        )
+
         self.history_service.save(
             result.findings
+        )
+
+        recommendation_result = (
+
+            self.recommendation_service
+            .generate(
+
+                result.findings,
+
+                risk_scores,
+
+                benchmark_result,
+
+                compliance_result,
+
+                knowledge_context
+            )
         )
 
         narrative_summary = (
@@ -407,6 +453,15 @@ class ArchitectureReviewService:
                 benchmark_result,
             
             "drift_result":
-                drift_result
+                drift_result,
+            
+            "cost_optimization":
+                cost_result,
+            
+            "compliance_result":
+                compliance_result,
+            
+            "recommendation_result":
+                recommendation_result
 
         }

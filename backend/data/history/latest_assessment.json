@@ -1,0 +1,27 @@
+{
+    "findings": [
+        "Missing liveness probe",
+        "Missing readiness probe",
+        "CPU limits not configured",
+        "CPU requests not configured",
+        "Memory requests not configured",
+        "Memory limits not configured",
+        "No security context configured",
+        "No pod anti-affinity configured",
+        "No tolerations configured",
+        "No Horizontal Pod Autoscaler configured",
+        "No ingress resource detected",
+        "Single replica deployment",
+        "Container image uses latest tag",
+        "Public EC2 instance detected",
+        "Public S3 bucket detected",
+        "IAM wildcard permissions detected",
+        "Hardcoded secrets detected",
+        "Resource tagging not detected",
+        "Public security group detected",
+        "Sensitive port 22 exposed",
+        "Sensitive port 3389 exposed",
+        "Public ingress combined with public security groups",
+        "Public cloud storage detected"
+    ]
+}
