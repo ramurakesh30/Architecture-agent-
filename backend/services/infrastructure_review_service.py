@@ -341,6 +341,9 @@ class ArchitectureReviewService:
             )
         )
 
+        print("COMPLIANCE RESULT:")
+        print(compliance_result)
+
         self.history_service.save(
             result.findings
         )

@@ -454,6 +454,7 @@ class PdfReportService:
             }
         )
 
+
         elements.append(
             Paragraph(
                 "Compliance Assessment",

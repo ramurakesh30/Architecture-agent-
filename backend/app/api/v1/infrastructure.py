@@ -50,9 +50,15 @@ async def analyze_architecture(
             )
         )
 
-        return review_service.analyze(
+        report = (
+            review_service.analyze(
             files
+            )
         )
+
+        return {
+            "report": report
+        }
 
     finally:
 
