@@ -4,6 +4,7 @@ from backend.app.api.v1.kubernetes import kubernetes_router
 from backend.app.api.v1.terraform import terraform_router
 from backend.app.api.v1.infrastructure import infrastructure_router
 from backend.app.api.v1.pdf_report import pdf_report_router
+from backend.app.api.v1.report_routes import db_report_router
 from fastapi.middleware.cors import (
     CORSMiddleware
 )
@@ -29,6 +30,11 @@ app.include_router(
 
 app.include_router(
     pdf_report_router,
+    prefix="/api/v1"
+)
+
+app.include_router(
+    db_report_router,
     prefix="/api/v1"
 )
 

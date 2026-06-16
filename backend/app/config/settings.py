@@ -21,3 +21,6 @@ class Settings:
         "EMBEDDING_MODEL",
         "all-MiniLM-L6-v2"
     )
+    DATABASE_URL = os.getenv(
+        "DATABASE_URL"
+    )

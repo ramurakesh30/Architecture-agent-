@@ -63,6 +63,24 @@ export default function Navbar() {
           </Link>
 
           <Link
+            href="/history"
+            className="
+              hover:text-cyan-400
+            "
+          >
+            History
+          </Link>
+
+          <Link
+            href="/trends"
+            className="
+              hover:text-cyan-400
+            "
+          >
+            Trends
+          </Link>
+
+          <Link
             href="/results"
             className="
               hover:text-cyan-400

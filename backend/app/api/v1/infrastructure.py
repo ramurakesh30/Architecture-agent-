@@ -7,6 +7,9 @@ from backend.services.file_discovery_service import DiscoveryService
 from backend.services.infrastructure_review_service import (
     ArchitectureReviewService
 )
+from services.report_repository import (
+    ReportRepository
+)
 
 import tempfile
 import os
@@ -54,6 +57,24 @@ async def analyze_architecture(
             review_service.analyze(
             files
             )
+        )
+
+        repository = ReportRepository()
+
+        repository.save(
+
+            repository_name=
+            file.filename,
+
+            overall_score=
+            report[
+                "benchmark_result"
+            ][
+                "overall_score"
+            ],
+
+            report=
+            report
         )
 
         return {
