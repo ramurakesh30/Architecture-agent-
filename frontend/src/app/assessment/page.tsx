@@ -10,6 +10,12 @@ export default function AssessmentPage() {
 
   const [loading, setLoading] =
     useState(false);
+  
+  const [
+    repositoryUrl,
+    setRepositoryUrl
+  ] = useState("");
+
 
   const router =
     useRouter();
@@ -24,6 +30,7 @@ export default function AssessmentPage() {
 
       return;
     }
+
 
     const formData =
       new FormData();
@@ -73,6 +80,77 @@ export default function AssessmentPage() {
 
       alert(
         "Assessment failed."
+      );
+
+    } finally {
+
+      setLoading(false);
+    }
+  }
+
+  async function runGithubAssessment() {
+
+    if (
+      !repositoryUrl.trim()
+    ) {
+
+      alert(
+        "Please enter a GitHub repository URL"
+      );
+
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+
+      const response =
+        await fetch(
+
+          "http://localhost:8000/api/v1/architecture/analyze-github",
+
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              repository_url:
+                repositoryUrl
+
+            })
+          }
+        );
+
+      const report =
+        await response.json();
+
+      sessionStorage.setItem(
+
+        "report",
+
+        JSON.stringify(
+          report
+        )
+      );
+
+      router.push(
+        "/results"
+      );
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
+
+      alert(
+        "GitHub analysis failed"
       );
 
     } finally {
@@ -200,6 +278,86 @@ export default function AssessmentPage() {
             loading
               ? "Running Assessment..."
               : "Run Assessment"
+          }
+
+        </button>
+
+      </div>
+
+      <div
+        className="
+          bg-slate-900
+          border
+          border-slate-800
+          rounded-lg
+          p-6
+        "
+      >
+
+        <h2
+          className="
+            text-2xl
+            font-semibold
+            mb-4
+          "
+        >
+          Analyze GitHub Repository
+        </h2>
+
+        <input
+
+          type="text"
+
+          value={
+            repositoryUrl
+          }
+
+          onChange={(e) =>
+
+            setRepositoryUrl(
+              e.target.value
+            )
+
+          }
+
+          placeholder="
+            https://github.com/org/repository
+          "
+
+          className="
+            w-full
+            p-3
+            rounded
+            bg-slate-800
+            border
+            border-slate-700
+            mb-4
+          "
+        />
+
+        <button
+
+          onClick={
+            runGithubAssessment
+          }
+
+          disabled={
+            loading
+          }
+
+          className="
+            bg-green-600
+            hover:bg-green-700
+            px-4
+            py-2
+            rounded
+          "
+        >
+
+          {
+            loading
+              ? "Analyzing..."
+              : "Analyze Repository"
           }
 
         </button>

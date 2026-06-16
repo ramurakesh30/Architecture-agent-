@@ -1,3 +1,5 @@
+import os
+
 from app.agents.kubernetes_agent import KubernetesAgent
 from app.agents.terraform_agent import TerraformAgent
 from app.agents.infrastructure_agent import InfrastructureAgent
@@ -174,11 +176,31 @@ class ArchitectureReviewService:
 
         package = InfrastructurePackage()
 
+
         for file in files:
+            
+            extension = (
+                os.path.splitext(file)[1]
+                .lower()
+            )
 
-            with open(file, "r", encoding="utf-8") as f:
+            if extension not in SUPPORTED_EXTENSIONS:
 
-                content = f.read()
+                continue
+
+            try:
+
+                with open(
+                    file,
+                    "r",
+                    encoding="utf-8"
+                ) as f:
+
+                    content = f.read()
+
+            except UnicodeDecodeError:
+
+                continue
 
             if file.endswith((".yaml", ".yml")):
 

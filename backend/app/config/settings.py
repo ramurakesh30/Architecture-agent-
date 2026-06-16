@@ -24,3 +24,23 @@ class Settings:
     DATABASE_URL = os.getenv(
         "DATABASE_URL"
     )
+
+    SUPPORTED_EXTENSIONS = {
+
+        ".py",
+        ".yaml",
+        ".yml",
+        ".json",
+        ".tf",
+        ".tfvars",
+        ".sh",
+        ".js",
+        ".ts",
+        ".tsx",
+        ".jsx",
+        ".java",
+        ".go",
+        ".sql",
+        ".md",
+        ".dockerfile"
+    }

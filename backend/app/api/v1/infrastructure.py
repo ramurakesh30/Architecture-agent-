@@ -2,8 +2,10 @@ from fastapi import APIRouter
 from fastapi import UploadFile
 from fastapi import File
 
+from backend.models.github_request import GithubRepositoryRequest
 from backend.services.archive_service import ArchiveService
 from backend.services.file_discovery_service import DiscoveryService
+from backend.services.github_service import GithubService
 from backend.services.infrastructure_review_service import (
     ArchitectureReviewService
 )
@@ -89,3 +91,70 @@ async def analyze_architecture(
             os.remove(
                 temp_file.name
             )
+
+@infrastructure_router.post(
+    "/analyze-github"
+)
+async def analyze_github_repository(
+    request:
+    GithubRepositoryRequest
+):
+
+    github_service = (
+        GithubService()
+    )
+
+    repo_path = (
+        github_service
+        .clone_repository(
+            request.repository_url
+        )
+    )
+
+    try:
+        files = []
+
+        for root, _, filenames in os.walk(repo_path):
+
+            for filename in filenames:
+
+                files.append(
+
+                    os.path.join(
+                        root,
+                        filename
+                    )
+                )
+
+        report = (
+
+            review_service
+            .analyze(
+                files
+            )
+        )
+
+        repository = ReportRepository()
+
+        repository.save(
+            repository_name=
+            request.repository_url,
+
+            overall_score=
+            report[
+                "benchmark_result"
+            ][
+                "overall_score"
+            ],
+
+            report=
+            report
+        )
+
+        return report
+
+    finally:
+
+        github_service.cleanup(
+            repo_path
+        )

@@ -90,59 +90,80 @@ HistoryPage() {
       >
 
         {
-          reports.map(
-            (
-              report
-            ) => (
+            Array.isArray(reports) &&
+            reports.map(
 
-              <div
-                key={
-                  report.id
-                }
-                className="
-                  bg-slate-900
-                  border
-                  border-slate-800
-                  rounded-lg
-                  p-4
-                "
-              >
+                (
+                report
+                ) => (
 
-                <h3
-                  className="
-                    text-lg
-                    font-semibold
-                  "
+                <Link
+                    key={report.id}
+                    href={`/history/${report.id}`}
                 >
-                  {
-                    report
-                    .repository_name
-                  }
-                </h3>
 
-                <p>
-                  Score:
-                  {" "}
-                  {
-                    report
-                    .overall_score
-                  }
-                </p>
-
-                <p
+                    <div
                     className="
+                        bg-slate-900
+                        border
+                        border-slate-800
+                        rounded-lg
+                        p-5
+                        hover:border-cyan-500
+                        hover:scale-[1.01]
+                        transition
+                        cursor-pointer
+                    "
+                    >
+
+                    <h3
+                        className="
+                        text-lg
+                        font-semibold
+                        mb-2
+                        "
+                    >
+                        {
+                        report
+                            .repository_name
+                        }
+                    </h3>
+
+                    <p
+                        className="
+                        text-cyan-400
+                        font-medium
+                        "
+                    >
+                        Score:
+                        {" "}
+                        {
+                        report
+                            .overall_score
+                        }
+                    </p>
+
+                    <p
+                        className="
                         text-slate-400
                         text-sm
-                    "
-                >
-                    {formatDate(report.created_at)}
-                </p>
+                        mt-2
+                        "
+                    >
+                        {
+                        formatDate(
+                            report.created_at
+                        )
+                        }
+                    </p>
 
-              </div>
+                    </div>
 
+                </Link>
+
+                )
             )
-          )
-        }
+            }
 
       </div>
 
