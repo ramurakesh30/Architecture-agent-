@@ -1,6 +1,38 @@
+"use client";
+import { useEffect } from "react";
+
+import { useRouter }
+from "next/navigation";
+
 import Link from "next/link";
 
 export default function HomePage() {
+
+  const router =
+    useRouter();
+
+  useEffect(() => {
+
+    const token =
+
+      localStorage.getItem(
+        "token"
+      );
+
+    if (token) {
+
+      router.replace(
+        "/assessment"
+      );
+
+    } else {
+
+      router.replace(
+        "/login"
+      );
+    }
+
+  }, [router]);
 
   return (
 
@@ -17,17 +49,16 @@ export default function HomePage() {
 
       <div
         className="
-          max-w-4xl
           text-center
         "
       >
 
         <h1
           className="
-            text-6xl
+            text-4xl
             font-bold
-            mb-6
             text-cyan-400
+            mb-4
           "
         >
           Architecture Agent
@@ -35,34 +66,11 @@ export default function HomePage() {
 
         <p
           className="
-            text-xl
-            text-slate-300
-            mb-10
+            text-slate-400
           "
         >
-          AI-powered cloud architecture review,
-          compliance validation,
-          benchmarking,
-          remediation generation,
-          and architecture recommendations.
+          Redirecting...
         </p>
-
-        <Link
-          href="/assessment"
-          className="
-            inline-block
-            bg-cyan-500
-            hover:bg-cyan-600
-            px-8
-            py-4
-            rounded-lg
-            font-semibold
-            text-lg
-            transition
-          "
-        >
-          Start Assessment
-        </Link>
 
       </div>
 

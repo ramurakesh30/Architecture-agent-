@@ -13,7 +13,8 @@ class ReportRepository:
         self,
         repository_name,
         overall_score,
-        report
+        report,
+        user_id
     ):
 
         db = SessionLocal()
@@ -29,7 +30,10 @@ class ReportRepository:
                     overall_score,
 
                     report_json=
-                    report
+                    report,
+
+                    user_id=
+                    user_id
                 )
             )
 
@@ -52,7 +56,8 @@ class ReportRepository:
             db.close()
 
     def list_reports(
-        self
+        self,
+        user_id
     ):
 
         db = SessionLocal()
@@ -64,7 +69,10 @@ class ReportRepository:
                 db.query(
                     AssessmentReport
                 )
-
+                .filter(
+                    AssessmentReport.user_id
+                    == user_id
+                )
                 .order_by(
                     AssessmentReport
                     .created_at
@@ -80,7 +88,8 @@ class ReportRepository:
 
     def get_report(
         self,
-        report_id
+        report_id,
+        user_id
     ):
 
         db = SessionLocal()
@@ -97,6 +106,11 @@ class ReportRepository:
                     AssessmentReport.id
                     == report_id
                 )
+                
+                .filter(
+                    AssessmentReport.user_id
+                    == user_id
+                )
 
                 .first()
             )
@@ -106,7 +120,8 @@ class ReportRepository:
             db.close()
 
     def get_trends(
-        self
+        self,
+        user_id
     ):
 
         db = SessionLocal()
@@ -117,6 +132,11 @@ class ReportRepository:
 
                 db.query(
                     AssessmentReport
+                )
+                
+                .filter(
+                    AssessmentReport.user_id
+                    == user_id
                 )
 
                 .order_by(
@@ -141,6 +161,60 @@ class ReportRepository:
 
                 for report in reports
             ]
+
+        finally:
+
+            db.close()
+    
+    def compare_reports(
+        self,
+        report_a_id: str,
+        report_b_id: str,
+        user_id: str
+    ):
+
+        db = SessionLocal()
+
+        try:
+
+            report_a = (
+                db.query(
+                    AssessmentReport
+                )
+                .filter(
+                    AssessmentReport.id
+                    == report_a_id
+                )
+                .filter(
+                    AssessmentReport.user_id
+                    == user_id
+                )
+                .first()
+            )
+
+            report_b = (
+                db.query(
+                    AssessmentReport
+                )
+                .filter(
+                    AssessmentReport.id
+                    == report_b_id
+                )
+                .filter(
+                    AssessmentReport.user_id
+                    == user_id
+                )
+                .first()
+            )
+
+            return {
+
+                "report_a":
+                    report_a.report_json,
+
+                "report_b":
+                    report_b.report_json
+            }
 
         finally:
 

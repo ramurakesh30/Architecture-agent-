@@ -63,6 +63,9 @@ from backend.app.langgraph.review_graph import review_graph
 from backend.services.risk_scoring_service import (
     RiskScoringService
 )
+from app.config.settings import (
+    Settings
+)
 
 class ArchitectureReviewService:
 
@@ -184,7 +187,7 @@ class ArchitectureReviewService:
                 .lower()
             )
 
-            if extension not in SUPPORTED_EXTENSIONS:
+            if extension not in Settings.SUPPORTED_EXTENSIONS:
 
                 continue
 

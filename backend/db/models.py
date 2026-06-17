@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy import (
     Column,
+    ForeignKey,
     String,
     Integer,
     DateTime
@@ -12,11 +13,13 @@ from sqlalchemy.dialects.postgresql import (
     JSONB
 )
 
-from sqlalchemy.orm import declarative_base
+from backend.db.database import Base
+
+from backend.models.user import User
 
 from datetime import datetime
 
-Base = declarative_base()
+
 
 
 class AssessmentReport(
@@ -31,6 +34,12 @@ class AssessmentReport(
         UUID(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4
+    )
+
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=False
     )
 
     repository_name = Column(

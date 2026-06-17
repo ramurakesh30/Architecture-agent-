@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from uuid import UUID
 
@@ -8,6 +8,10 @@ from fastapi import (
 
 from services.report_repository import (
     ReportRepository
+)
+
+from backend.services.auth_dependency import (
+    get_current_user_id
 )
 
 db_report_router = APIRouter()
@@ -20,11 +24,15 @@ repository = (
 @db_report_router.get(
     "/reports"
 )
-def list_reports():
+def list_reports(
+    current_user_id: str = Depends(
+        get_current_user_id
+    )
+):
 
     reports = (
         repository
-        .list_reports()
+        .list_reports(current_user_id)
     )
 
     return [
@@ -50,18 +58,54 @@ def list_reports():
 @db_report_router.get(
     "/reports/trends"
 )
-def get_trends():
+def get_trends(
+    
+    current_user_id: str = Depends(
+        get_current_user_id
+    )
+):
 
     return (
         repository
-        .get_trends()
+        .get_trends(current_user_id)
     )
+
+@db_report_router.get(
+    "/reports/compare"
+)
+def compare_reports(
+
+    report_a_id: str,
+
+    report_b_id: str,
+
+    current_user_id: str = Depends(
+        get_current_user_id
+    )
+):
+
+    return (
+
+        repository
+        .compare_reports(
+
+            report_a_id,
+
+            report_b_id,
+            
+            current_user_id
+        )
+    )
+
 
 @db_report_router.get(
     "/reports/{report_id}"
 )
 def get_report(
-    report_id: str
+    report_id: str,
+    current_user_id: str = Depends(
+        get_current_user_id
+    )
 ):
 
     try:
@@ -83,7 +127,8 @@ def get_report(
     report = (
         repository
         .get_report(
-            report_id
+            report_id,
+            current_user_id
         )
     )
 
@@ -101,3 +146,4 @@ def get_report(
         report
         .report_json
     )
+

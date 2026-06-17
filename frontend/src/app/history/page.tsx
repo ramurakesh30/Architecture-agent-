@@ -5,6 +5,10 @@ import {
   useState
 } from "react";
 
+import { useRouter }
+
+from "next/navigation";
+
 import Link from "next/link";
 
 import {
@@ -31,142 +35,162 @@ function formatDate(
 
 export default function
 HistoryPage() {
+  
+    const router =
+        useRouter();
 
-  const [
-    reports,
-    setReports
-  ] = useState<any[]>([]);
+    useEffect(() => {
 
-  useEffect(() => {
+    const token =
 
-    getAssessmentHistory()
-
-      .then((data) => {
-
-        console.log(
-            "REPORTS:",
-            data
+        localStorage.getItem(
+        "token"
         );
 
-        console.log(
-            "IS ARRAY:",
-            Array.isArray(data)
+    if (!token) {
+
+        router.push(
+        "/login"
         );
+    }
 
-        setReports(
-            Array.isArray(data)
-            ? data
-            : data.reports || []
-        );
+    }, []);
 
-        });
+    const [
+        reports,
+        setReports
+    ] = useState<any[]>([]);
 
-  }, []);
+    useEffect(() => {
 
-  return (
+        getAssessmentHistory()
 
-    <main
-      className="
-        max-w-6xl
-        mx-auto
-        p-8
-      "
-    >
+        .then((data) => {
 
-      <h1
+            console.log(
+                "REPORTS:",
+                data
+            );
+
+            console.log(
+                "IS ARRAY:",
+                Array.isArray(data)
+            );
+
+            setReports(
+                Array.isArray(data)
+                ? data
+                : data.reports || []
+            );
+
+            });
+
+    }, []);
+
+    return (
+
+        <main
         className="
-          text-4xl
-          font-bold
-          mb-8
+            max-w-6xl
+            mx-auto
+            p-8
         "
-      >
-        Assessment History
-      </h1>
+        >
 
-      <div
-        className="
-          space-y-4
-        "
-      >
+        <h1
+            className="
+            text-4xl
+            font-bold
+            mb-8
+            "
+        >
+            Assessment History
+        </h1>
 
-        {
-            Array.isArray(reports) &&
-            reports.map(
+        <div
+            className="
+            space-y-4
+            "
+        >
 
-                (
-                report
-                ) => (
+            {
+                Array.isArray(reports) &&
+                reports.map(
 
-                <Link
-                    key={report.id}
-                    href={`/history/${report.id}`}
-                >
+                    (
+                    report
+                    ) => (
 
-                    <div
-                    className="
-                        bg-slate-900
-                        border
-                        border-slate-800
-                        rounded-lg
-                        p-5
-                        hover:border-cyan-500
-                        hover:scale-[1.01]
-                        transition
-                        cursor-pointer
-                    "
+                    <Link
+                        key={report.id}
+                        href={`/history/${report.id}`}
                     >
 
-                    <h3
+                        <div
                         className="
-                        text-lg
-                        font-semibold
-                        mb-2
+                            bg-slate-900
+                            border
+                            border-slate-800
+                            rounded-lg
+                            p-5
+                            hover:border-cyan-500
+                            hover:scale-[1.01]
+                            transition
+                            cursor-pointer
                         "
-                    >
-                        {
-                        report
-                            .repository_name
-                        }
-                    </h3>
+                        >
 
-                    <p
-                        className="
-                        text-cyan-400
-                        font-medium
-                        "
-                    >
-                        Score:
-                        {" "}
-                        {
-                        report
-                            .overall_score
-                        }
-                    </p>
+                        <h3
+                            className="
+                            text-lg
+                            font-semibold
+                            mb-2
+                            "
+                        >
+                            {
+                            report
+                                .repository_name
+                            }
+                        </h3>
 
-                    <p
-                        className="
-                        text-slate-400
-                        text-sm
-                        mt-2
-                        "
-                    >
-                        {
-                        formatDate(
-                            report.created_at
-                        )
-                        }
-                    </p>
+                        <p
+                            className="
+                            text-cyan-400
+                            font-medium
+                            "
+                        >
+                            Score:
+                            {" "}
+                            {
+                            report
+                                .overall_score
+                            }
+                        </p>
 
-                    </div>
+                        <p
+                            className="
+                            text-slate-400
+                            text-sm
+                            mt-2
+                            "
+                        >
+                            {
+                            formatDate(
+                                report.created_at
+                            )
+                            }
+                        </p>
 
-                </Link>
+                        </div>
 
+                    </Link>
+
+                    )
                 )
-            )
-            }
+                }
 
-      </div>
+        </div>
 
-    </main>
-  );
+        </main>
+    );
 }

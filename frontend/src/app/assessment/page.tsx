@@ -49,6 +49,11 @@ export default function AssessmentPage() {
           "http://localhost:8000/api/v1/architecture/analyze",
           {
             method: "POST",
+            headers: {
+            Authorization:
+              `Bearer ${localStorage.getItem("token")}`
+
+            },
             body: formData
           }
         );
@@ -108,14 +113,16 @@ export default function AssessmentPage() {
       const response =
         await fetch(
 
-          "http://localhost:8000/api/v1/architecture/analyze-github",
+          "http://localhost:8000/api/v1/analyze-github",
 
           {
             method: "POST",
 
             headers: {
-              "Content-Type":
-                "application/json"
+              "Content-Type": "application/json",
+
+              Authorization:
+                `Bearer ${localStorage.getItem("token")}`
             },
 
             body: JSON.stringify({
@@ -129,6 +136,16 @@ export default function AssessmentPage() {
 
       const report =
         await response.json();
+
+      console.log("Assessment page result:",report)
+
+      if (!response.ok) {
+
+        throw new Error(
+          report.detail ??
+          "GitHub analysis failed"
+        );
+      }
 
       sessionStorage.setItem(
 

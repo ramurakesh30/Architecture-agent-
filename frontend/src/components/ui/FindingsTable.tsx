@@ -67,7 +67,7 @@ export default function FindingsTable({
         <tbody>
 
           {
-            findings.map(
+            (findings ?? []).map(
               (
                 finding,
                 index

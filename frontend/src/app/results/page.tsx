@@ -126,9 +126,8 @@ export default function ResultsPage() {
             "
           >
             {
-              report
-                .category_scores
-                .security
+              report?.category_scores
+                ?.security ?? "-"
             }
           </p>
 
@@ -161,9 +160,8 @@ export default function ResultsPage() {
             "
           >
             {
-              report
-                .category_scores
-                .reliability
+              report?.category_scores
+                ?.reliability ?? "-"
             }
           </p>
 
@@ -196,9 +194,8 @@ export default function ResultsPage() {
             "
           >
             {
-              report
-                .category_scores
-                .scalability
+              report?.category_scores
+                ?.scalability ?? "-"
             }
           </p>
 

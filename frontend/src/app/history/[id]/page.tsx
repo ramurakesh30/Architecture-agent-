@@ -24,6 +24,13 @@ from "@/src/components/ui/BenchmarkDashboard";
 import RecommendationsDashboard
 from "@/src/components/ui/RecommendationsDashboard";
 
+import {
+  downloadPdf
+} from "@/src/app/services/export";
+
+import ChatAssistant
+from "@/src/components/ui/ChatAssistant";
+
 export default function
 AssessmentDetailsPage() {
 
@@ -41,6 +48,31 @@ AssessmentDetailsPage() {
     loading,
     setLoading
   ] = useState(true);
+
+  async function
+    handleExportPdf() {
+
+    try {
+
+        await downloadPdf(
+        params.id as string
+        );
+
+    } catch (
+
+        error
+
+    ) {
+
+        console.error(
+        error
+        );
+
+        alert(
+        "Failed to export PDF"
+        );
+    }
+    }
 
   useEffect(() => {
 
@@ -126,92 +158,133 @@ AssessmentDetailsPage() {
   return (
 
     <main
-      className="
+        className="
         max-w-7xl
         mx-auto
         p-8
         space-y-8
-      "
+        "
     >
 
-      <h1
+        <div
         className="
-          text-4xl
-          font-bold
+            flex
+            justify-between
+            items-center
         "
-      >
-        Assessment Details
-      </h1>
+        >
 
-      {
+        <h1
+            className="
+            text-4xl
+            font-bold
+            "
+        >
+            Assessment Details
+        </h1>
+
+        <button
+
+            onClick={
+            handleExportPdf
+            }
+
+            className="
+            bg-cyan-600
+            hover:bg-cyan-700
+            text-white
+            px-4
+            py-2
+            rounded-lg
+            transition
+            "
+        >
+
+            Export PDF
+
+        </button>
+
+        </div>
+
+        {
         report.findings && (
 
-          <FindingsTable
+            <FindingsTable
             findings={
-              report.findings
+                report.findings
             }
-          />
+            />
 
         )
-      }
+        }
 
-      {
+        {
         report.compliance_result && (
 
-          <ComplianceDashboard
+            <ComplianceDashboard
 
             frameworks={
-              report
-              .compliance_result
-              .frameworks
+                report
+                .compliance_result
+                .frameworks
             }
 
-          />
+            />
 
         )
-      }
+        }
 
-      {
+        {
         report.benchmark_result && (
 
-          <BenchmarkDashboard
+            <BenchmarkDashboard
 
             overallScore={
-                report.benchmark_result
+                report
+                .benchmark_result
                 .overall_score
             }
 
             frameworks={
-                report.benchmark_result
+                report
+                .benchmark_result
                 .frameworks
             }
 
-          />
+            />
 
         )
-      }
+        }
 
-      {
+        {
         report.recommendation_result &&
         report.recommendations && (
 
-          <RecommendationsDashboard
+            <RecommendationsDashboard
 
             recommendationResult={
-              report
-              .recommendation_result
+                report
+                .recommendation_result
             }
 
             recommendations={
-              report
-              .recommendations
+                report
+                .recommendations
             }
 
-          />
+            />
 
         )
-      }
+        }
+        <ChatAssistant
+
+            reportId={
+                params.id as string
+            }
+
+        />
 
     </main>
-  );
+
+    );
 }

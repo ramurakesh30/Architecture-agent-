@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from fastapi import UploadFile
 from fastapi import File
+from fastapi import Depends
 
 from backend.models.github_request import GithubRepositoryRequest
 from backend.services.archive_service import ArchiveService
@@ -12,6 +13,10 @@ from backend.services.infrastructure_review_service import (
 from services.report_repository import (
     ReportRepository
 )
+from backend.services.auth_dependency import (
+    get_current_user_id
+)
+
 
 import tempfile
 import os
@@ -27,7 +32,10 @@ review_service = ArchitectureReviewService()
 
 @infrastructure_router.post("/architecture/analyze")
 async def analyze_architecture(
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+     current_user_id: str = Depends(
+        get_current_user_id
+    )
 ):
 
     temp_file = tempfile.NamedTemporaryFile(
@@ -76,7 +84,10 @@ async def analyze_architecture(
             ],
 
             report=
-            report
+            report,
+            
+            user_id=
+            current_user_id
         )
 
         return {
@@ -97,7 +108,11 @@ async def analyze_architecture(
 )
 async def analyze_github_repository(
     request:
-    GithubRepositoryRequest
+    GithubRepositoryRequest,
+    
+    current_user_id: str = Depends(
+        get_current_user_id
+    )
 ):
 
     github_service = (
@@ -148,7 +163,10 @@ async def analyze_github_repository(
             ],
 
             report=
-            report
+            report,
+            
+            user_id=
+            current_user_id
         )
 
         return report
