@@ -1,51 +1,25 @@
 import json
-import re
 
 
 class RemediationGeneratorService:
-
-    def __init__(
-        self,
-        provider
-    ):
+    def __init__(self, provider):
 
         self.provider = provider
-    
-    def generate(
-        self,
-        findings,
-        knowledge_context
-    ):
+
+    def generate(self, findings, knowledge_context):
 
         remediations = []
 
         for finding in findings:
+            print(f"Generating remediation for: {finding}")
 
-            print(
-                f"Generating remediation for: {finding}"
-            )
+            remediation = self.generate_single_remediation(finding, knowledge_context)
 
-            remediation = (
-                self.generate_single_remediation(
-                    finding,
-                    knowledge_context
-                )
-            )
+            remediations.append(remediation)
 
-            remediations.append(
-                remediation
-            )
+        return {"remediations": remediations}
 
-        return {
-            "remediations":
-                remediations
-        }
-    
-    def generate_single_remediation(
-        self,
-        finding,
-        knowledge_context
-    ):
+    def generate_single_remediation(self, finding, knowledge_context):
 
         prompt = f"""
     You are a Principal Cloud Architect.
@@ -81,42 +55,22 @@ class RemediationGeneratorService:
     }}
     """
 
-        response = (
-            self.provider.generate(
-                prompt
-            )
-        )
+        response = self.provider.generate(prompt)
 
-        response = (
-            response
-            .replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )
+        response = response.replace("```json", "").replace("```", "").strip()
 
         print("RAW RESPONSE:")
         print(response)
 
         try:
+            data = json.loads(response)
 
-            data = json.loads(
-                response
-            )
-
-            if isinstance(
-                data,
-                list
-            ):
-
+            if isinstance(data, list):
                 if len(data) > 0:
-
                     return data[0]
 
         except Exception as ex:
-
-            print(
-                f"Failed remediation for: {finding}"
-            )
+            print(f"Failed remediation for: {finding}")
 
             print(ex)
 
@@ -126,6 +80,6 @@ class RemediationGeneratorService:
                 "remediation": "Unable to generate remediation",
                 "implementation_steps": [
                     "Review the finding manually",
-                    "Generate remediation again"
-                ]
+                    "Generate remediation again",
+                ],
             }

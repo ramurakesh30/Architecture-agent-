@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+
+  postgres:
+
+    image: postgres:16
+
+    environment:
+
+      POSTGRES_DB: architecture_agent
+
+      POSTGRES_USER: postgres
+
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+
+      - "5432:5432"
+
+  backend:
+
+    build: ./backend
+
+    ports:
+
+      - "8000:8000"
+
+    depends_on:
+
+      - postgres
+
+  frontend:
+
+    build: ./frontend
+
+    ports:
+
+      - "3000:3000"
+
+    depends_on:
+
+      - backend
+
+  ollama:
+
+    image: ollama/ollama
+
+    ports:
+
+      - "11434:11434"

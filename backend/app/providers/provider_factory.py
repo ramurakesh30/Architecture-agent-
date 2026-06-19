@@ -1,27 +1,12 @@
-from app.config.settings import (
-    Settings
-)
+from app.config.settings import Settings
+from app.providers.ollama_provider import OllamaProvider
 
-from app.providers.ollama_provider import (
-    OllamaProvider
-)
 
 class ProviderFactory:
-
     @staticmethod
     def create():
 
-        if (
-            Settings.AI_PROVIDER
-            == "ollama"
-        ):
+        if Settings.AI_PROVIDER == "ollama":
+            return OllamaProvider(model=Settings.OLLAMA_MODEL)
 
-            return OllamaProvider(
-                model=
-                Settings.OLLAMA_MODEL
-            )
-
-        raise ValueError(
-            f"Unsupported provider: "
-            f"{Settings.AI_PROVIDER}"
-        )
+        raise ValueError(f"Unsupported provider: {Settings.AI_PROVIDER}")

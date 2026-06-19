@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  API_URL
+} from "@/src/lib/config";
+
 export default function AssessmentPage() {
 
   const [file, setFile] =
@@ -46,7 +50,7 @@ export default function AssessmentPage() {
 
       const response =
         await fetch(
-          "http://localhost:8000/api/v1/architecture/analyze",
+          `${API_URL}/api/v1/architecture/analyze`,
           {
             method: "POST",
             headers: {
@@ -113,7 +117,7 @@ export default function AssessmentPage() {
       const response =
         await fetch(
 
-          "http://localhost:8000/api/v1/analyze-github",
+          `${API_URL}/api/v1/analyze-github`,
 
           {
             method: "POST",

@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 
 @dataclass
 class KubernetesConfig:
-
     replicas: int = 1
 
     container_count: int = 0

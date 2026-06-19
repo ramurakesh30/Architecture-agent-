@@ -1,5 +1,9 @@
+import {
+  API_URL
+} from "@/src/lib/config";
+
 const API_BASE =
-  "http://localhost:8000/api/v1/auth";
+  `${API_URL}/api/v1/auth`;
 
 export async function
 register(

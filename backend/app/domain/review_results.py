@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 
 from backend.app.domain.findings import (
+    SEVERITY_WEIGHTS,
+    Category,
     Finding,
     Recommendation,
-    Category,
-    SEVERITY_WEIGHTS
 )
 
 
@@ -19,7 +19,7 @@ class ReviewResult:
             Category.SCALABILITY.value: 100,
             Category.COST.value: 100,
             Category.RELIABILITY.value: 100,
-            Category.OBSERVABILITY.value: 100
+            Category.OBSERVABILITY.value: 100,
         }
     )
     findings: list = field(default_factory=list)
@@ -27,34 +27,26 @@ class ReviewResult:
 
     def add_finding(self, finding: Finding):
         penalty = SEVERITY_WEIGHTS[finding.severity]
-        
+
         self.findings.append(finding)
-        
+
         category = finding.category.value
 
-        self.category_scores[
-            category
-        ] = max(
-            0,
-            self.category_scores[category]
-            - penalty
+        self.category_scores[category] = max(
+            0, self.category_scores[category] - penalty
         )
 
     def add_recommendation(self, recommendation: Recommendation):
         self.recommendations.append(recommendation)
-    
+
     def calculate_overall_score(self):
 
-        scores = list(
-            self.category_scores.values()
-        )
+        scores = list(self.category_scores.values())
 
-        self.overall_score = int(
-            sum(scores) / len(scores)
-        )
+        self.overall_score = int(sum(scores) / len(scores))
 
         return self.overall_score
-    
+
     def get_risk_level(self):
 
         if self.overall_score >= 90:

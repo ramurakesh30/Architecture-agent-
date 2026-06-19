@@ -1,3 +1,6 @@
+import FixGenerator
+from "@/src/components/ui/FixGenerator";
+
 interface Finding {
 
   message: string;
@@ -6,11 +9,16 @@ interface Finding {
 interface FindingsTableProps {
 
   findings: Finding[];
+
+  reportId: string;
 }
 
-
 export default function FindingsTable({
-  findings
+
+  findings,
+
+  reportId
+
 }: FindingsTableProps) {
 
   return (
@@ -60,6 +68,15 @@ export default function FindingsTable({
               Finding
             </th>
 
+            <th
+              className="
+                text-left
+                py-3
+              "
+            >
+              AI Fix
+            </th>
+
           </tr>
 
         </thead>
@@ -78,15 +95,39 @@ export default function FindingsTable({
                   className="
                     border-b
                     border-slate-800
+                    align-top
                   "
                 >
 
                   <td
                     className="
                       py-3
+                      pr-4
                     "
                   >
-                    {finding.message}
+                    {
+                      finding.message
+                    }
+                  </td>
+
+                  <td
+                    className="
+                      py-3
+                    "
+                  >
+
+                    <FixGenerator
+
+                      reportId={
+                        reportId
+                      }
+
+                      finding={
+                        finding.message
+                      }
+
+                    />
+
                   </td>
 
                 </tr>
@@ -109,7 +150,9 @@ export default function FindingsTable({
 
         Total Findings:
         {" "}
-        {findings.length}
+        {
+          findings.length
+        }
 
       </div>
 

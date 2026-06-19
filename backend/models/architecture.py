@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from backend.db.database import Base
 
+
 class ArchitectureReview(Base):
     __tablename__ = "architecture_reviews"
 

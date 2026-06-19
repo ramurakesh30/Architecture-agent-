@@ -1,19 +1,9 @@
+from app.config.settings import Settings
 from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-from sqlalchemy.orm import sessionmaker, declarative_base
+engine = create_engine(Settings.DATABASE_URL)
 
-from app.config.settings import (
-    Settings
-)
-
-engine = create_engine(
-    Settings.DATABASE_URL
-)
-
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()

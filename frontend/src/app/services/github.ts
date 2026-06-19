@@ -1,5 +1,9 @@
 import { authHeaders } from "@/src/lib/auth";
 
+import {
+  API_URL
+} from "@/src/lib/config";
+
 export async function
 analyzeGithubRepository(
   repositoryUrl: string) 
@@ -12,7 +16,7 @@ analyzeGithubRepository(
   const response =
     await fetch(
 
-      "http://localhost:8000/api/v1/analyze-github",
+      `${API_URL}/api/v1/analyze-github`,
 
       {
         method: "POST",

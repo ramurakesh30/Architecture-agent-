@@ -25,14 +25,28 @@ repository = (
     "/reports"
 )
 def list_reports(
+    page: int = 1,
+
+    page_size: int = 20,
+
     current_user_id: str = Depends(
         get_current_user_id
     )
 ):
+    offset = (
+
+        (page - 1)
+
+        * page_size
+
+    )
 
     reports = (
         repository
-        .list_reports(current_user_id)
+        .list_reports(
+            current_user_id,
+            offset,
+            page_size)
     )
 
     return [

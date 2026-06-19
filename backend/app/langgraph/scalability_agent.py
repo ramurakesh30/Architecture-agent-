@@ -1,30 +1,7 @@
-def scalability_node(
-    state
-):
+def scalability_node(state):
 
-    scalability_findings = [
+    scalability_findings = [f for f in state["findings"] if f.category == "scalability"]
 
-        f
-
-        for f
-        in state["findings"]
-
-        if f.category
-        ==
-        "scalability"
-    ]
-
-    state[
-        "scalability_review"
-    ] = (
-        "\n".join(
-            [
-                f.message
-
-                for f
-                in scalability_findings
-            ]
-        )
-    )
+    state["scalability_review"] = "\n".join([f.message for f in scalability_findings])
 
     return state

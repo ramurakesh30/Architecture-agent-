@@ -1,5 +1,5 @@
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 
 
 class Category(str, Enum):
@@ -17,11 +17,12 @@ class Severity(str, Enum):
     HIGH = "high"
     CRITICAL = "critical"
 
+
 SEVERITY_WEIGHTS = {
     Severity.LOW: 2,
     Severity.MEDIUM: 5,
     Severity.HIGH: 10,
-    Severity.CRITICAL: 20
+    Severity.CRITICAL: 20,
 }
 
 

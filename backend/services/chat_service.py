@@ -1,39 +1,17 @@
 import json
 
-from backend.services.ollama_service import (
-    OllamaService
-)
+from backend.services.ollama_service import OllamaService
 
 
 class ChatService:
-
     def __init__(self):
 
-        self.ollama = (
-            OllamaService()
-        )
+        self.ollama = OllamaService()
 
-    def answer_question(
+    def answer_question(self, report: dict, question: str):
+        print("QUESTION:", question)
 
-        self,
-
-        report: dict,
-
-        question: str
-
-    ):
-        print(
-            "QUESTION:",
-            question
-        )
-
-        context = json.dumps(
-
-            report,
-
-            indent=2
-
-        )
+        context = json.dumps(report, indent=2)
 
         prompt = f"""
 You are an enterprise architecture reviewer.
@@ -64,17 +42,6 @@ Requirements:
 5. Do not invent information.
 """
 
-        answer = (
+        answer = self.ollama.chat(prompt)
 
-            self.ollama.chat(
-                prompt
-            )
-
-        )
-
-        return {
-
-            "answer":
-            answer
-
-        }
+        return {"answer": answer}

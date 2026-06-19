@@ -1,37 +1,30 @@
 import json
 import re
-from urllib import response
 
-from backend.app.providers.provider_factory import (
-    ProviderFactory
-)
+from backend.app.providers.provider_factory import ProviderFactory
 
 
-def architect_node(
-    state
-):
-    provider = (
-        ProviderFactory.create()
-    )
+def architect_node(state):
+    provider = ProviderFactory.create()
 
     prompt = f"""
 You are a Principal Cloud Architect.
 
 Security Assessment:
 
-{state['security_review']}
+{state["security_review"]}
 
 Reliability Assessment:
 
-{state['reliability_review']}
+{state["reliability_review"]}
 
 Scalability Assessment:
 
-{state['scalability_review']}
+{state["scalability_review"]}
 
 Relevant Best Practices:
 
-{state['knowledge_context']}
+{state["knowledge_context"]}
 
 IMPORTANT:
 
@@ -59,62 +52,36 @@ Use this schema:
 }}
 """
 
-    result = (
-        provider.generate(
-            prompt
-        )
-    )
+    result = provider.generate(prompt)
     print("CHIEF ARCHITECT RESPONSE:")
     print(result)
-    
-    match = re.search(
-        r'\{.*\}',
-        result,
-        re.DOTALL
-    )
+
+    match = re.search(r"\{.*\}", result, re.DOTALL)
 
     if match:
-
         try:
-
-            state["final_review"] = (
-                json.loads(
-                    match.group(0)
-                )
-            )
+            state["final_review"] = json.loads(match.group(0))
 
         except Exception as ex:
-
-            print(
-                "CHIEF ARCHITECT JSON ERROR"
-            )
+            print("CHIEF ARCHITECT JSON ERROR")
 
             print(ex)
 
             state["final_review"] = {
-                "executive_assessment":
-                    result,
-
+                "executive_assessment": result,
                 "top_priorities": [],
-
-                "remediation_roadmap": []
+                "remediation_roadmap": [],
             }
 
     else:
-
-        print(
-            "NO JSON FOUND IN CHIEF ARCHITECT RESPONSE"
-        )
+        print("NO JSON FOUND IN CHIEF ARCHITECT RESPONSE")
 
         print(result)
 
         state["final_review"] = {
-            "executive_assessment":
-                result,
-
+            "executive_assessment": result,
             "top_priorities": [],
-
-            "remediation_roadmap": []
+            "remediation_roadmap": [],
         }
 
     return state

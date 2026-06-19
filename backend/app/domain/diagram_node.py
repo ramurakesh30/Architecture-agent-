@@ -1,10 +1,5 @@
 class DiagramNode:
-
-    def __init__(
-        self,
-        node_id,
-        label
-    ):
+    def __init__(self, node_id, label):
 
         self.node_id = node_id
 

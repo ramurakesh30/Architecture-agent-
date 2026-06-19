@@ -1,10 +1,7 @@
 from typing import TypedDict
 
 
-class ReviewState(
-    TypedDict
-):
-
+class ReviewState(TypedDict):
     findings: list
 
     knowledge_context: str

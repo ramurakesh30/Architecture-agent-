@@ -1,7 +1,11 @@
 import { authHeaders } from "@/src/lib/auth";
 
+import {
+  API_URL
+} from "@/src/lib/config";
+
 const API_BASE =
-  "http://localhost:8000/api/v1";
+  `${API_URL}/api/v1`;
 
 export async function
 generateRemediationPlan(

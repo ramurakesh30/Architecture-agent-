@@ -1,28 +1,17 @@
 class FindingCorrelationService:
-
-    def deduplicate(
-        self,
-        result
-    ):
+    def deduplicate(self, result):
 
         # Findings
         unique_findings = []
         finding_keys = set()
 
         for finding in result.findings:
-
-            key = (
-                finding.category,
-                finding.message
-            )
+            key = (finding.category, finding.message)
 
             if key not in finding_keys:
-
                 finding_keys.add(key)
 
-                unique_findings.append(
-                    finding
-                )
+                unique_findings.append(finding)
 
         result.findings = unique_findings
 
@@ -31,24 +20,13 @@ class FindingCorrelationService:
         recommendation_keys = set()
 
         for recommendation in result.recommendations:
-
-            key = (
-                recommendation.category,
-                recommendation.message
-            )
+            key = (recommendation.category, recommendation.message)
 
             if key not in recommendation_keys:
+                recommendation_keys.add(key)
 
-                recommendation_keys.add(
-                    key
-                )
+                unique_recommendations.append(recommendation)
 
-                unique_recommendations.append(
-                    recommendation
-                )
-
-        result.recommendations = (
-            unique_recommendations
-        )
+        result.recommendations = unique_recommendations
 
         return result

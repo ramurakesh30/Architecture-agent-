@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 @dataclass
 class InfrastructureSummary:
-
     total_deployments: int = 0
 
     total_replicas: int = 0

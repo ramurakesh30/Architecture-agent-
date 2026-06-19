@@ -1,35 +1,20 @@
 import json
 import re
 
+from app.providers.ai_provider import AIProvider
 from ollama import chat
 
-from app.providers.ai_provider import (
-    AIProvider
-)
 
-
-class OllamaProvider(
-    AIProvider
-):
-
-    def __init__(
-        self,
-        model
-    ):
+class OllamaProvider(AIProvider):
+    def __init__(self, model):
 
         self.model = model
 
-        print(f'the model is: {self.model}')
+        print(f"the model is: {self.model}")
 
-    def generate_architecture_review(
-        self,
-        findings,
-        knowledge_context
-    ):
-        
-        findings_text = "\n".join(
-            findings
-        )
+    def generate_architecture_review(self, findings, knowledge_context):
+
+        findings_text = "\n".join(findings)
 
         prompt = f"""
 You are a Principal Cloud Architect.
@@ -94,69 +79,28 @@ Use the best-practice knowledge provided above when generating recommendations.
 """
 
         response = chat(
-
-            model=self.model,
-
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
+            model=self.model, messages=[{"role": "user", "content": prompt}]
         )
 
-        content = response[
-            "message"
-        ][
-            "content"
-        ]
+        content = response["message"]["content"]
 
-        content = (
-            content
-            .replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )
+        content = content.replace("```json", "").replace("```", "").strip()
         print("OLLAMA RESPONSE:")
         print(content)
 
-        match = re.search(
-            r'\{.*\}',
-            content,
-            re.DOTALL
-        )
+        match = re.search(r"\{.*\}", content, re.DOTALL)
 
         if not match:
-
-            raise ValueError(
-                "No JSON found in model response"
-            )
+            raise ValueError("No JSON found in model response")
 
         json_text = match.group(0)
 
-        return json.loads(
-            json_text
-        )
-    
-    def generate(
-        self,
-        prompt
-    ):
+        return json.loads(json_text)
+
+    def generate(self, prompt):
 
         response = chat(
-
-            model=self.model,
-
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
+            model=self.model, messages=[{"role": "user", "content": prompt}]
         )
 
-        return response[
-            "message"
-        ][
-            "content"
-        ]
+        return response["message"]["content"]

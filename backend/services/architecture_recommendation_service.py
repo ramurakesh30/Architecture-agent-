@@ -3,11 +3,7 @@ import re
 
 
 class ArchitectureRecommendationService:
-
-    def __init__(
-        self,
-        provider
-    ):
+    def __init__(self, provider):
 
         self.provider = provider
 
@@ -17,20 +13,11 @@ class ArchitectureRecommendationService:
         risk_scores,
         benchmark_result,
         compliance_result,
-        knowledge_context
+        knowledge_context,
     ):
 
         findings_text = "\n".join(
-
-            str(
-                getattr(
-                    finding,
-                    "message",
-                    finding
-                )
-            )
-
-            for finding in findings
+            str(getattr(finding, "message", finding)) for finding in findings
         )
 
         prompt = f"""
@@ -42,24 +29,15 @@ Current Findings:
 
 Risk Scores:
 
-{json.dumps(
-    risk_scores,
-    indent=2
-)}
+{json.dumps(risk_scores, indent=2)}
 
 Benchmark Results:
 
-{json.dumps(
-    benchmark_result,
-    indent=2
-)}
+{json.dumps(benchmark_result, indent=2)}
 
 Compliance Results:
 
-{json.dumps(
-    compliance_result,
-    indent=2
-)}
+{json.dumps(compliance_result, indent=2)}
 
 Knowledge Base:
 
@@ -122,100 +100,51 @@ Example:
 Generate recommendations now.
 """
 
-        response = (
-            self.provider.generate(
-                prompt
-            )
-        )
+        response = self.provider.generate(prompt)
 
-        response = (
-            response
-            .replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )
+        response = response.replace("```json", "").replace("```", "").strip()
 
         try:
             print("RECOMMENDATION RESPONSE:")
             print(response)
 
-            match = re.search(
-                r'\{.*\}',
-                response,
-                re.DOTALL
-            )
+            match = re.search(r"\{.*\}", response, re.DOTALL)
 
             if match:
+                result = json.loads(match.group(0))
+                target_architecture = result.get("target_architecture", "")
 
-                result =  json.loads(
-                    match.group(0)
-                )
-                target_architecture = result.get(
-                    "target_architecture",
-                    ""
-                )
+                if isinstance(target_architecture, dict):
+                    description = target_architecture.get("description", "")
 
-                if isinstance(
-                    target_architecture,
-                    dict
-                ):
-
-                    description = target_architecture.get(
-                        "description",
-                        ""
-                    )
-
-                    components = ", ".join(
-
-                        target_architecture.get(
-                            "components",
-                            []
-                        )
-                    )
+                    components = ", ".join(target_architecture.get("components", []))
 
                     configurations = ", ".join(
-
-                        target_architecture.get(
-                            "configurations",
-                            []
-                        )
+                        target_architecture.get("configurations", [])
                     )
 
-                    result[
-                        "target_architecture"
-                    ] = (
+                    result["target_architecture"] = (
                         f"{description}\n\n"
                         f"Components: {components}\n\n"
                         f"Configurations: {configurations}"
                     )
                 return result
-            
+
             return {
-
-                "target_architecture":
-                    response,
-
+                "target_architecture": response,
                 "recommendations": [],
-
-                "expected_improvements": {}
+                "expected_improvements": {},
             }
 
-
         except Exception as ex:
-
-            print(
-                "RECOMMENDATION JSON ERROR:"
-            )
+            print("RECOMMENDATION JSON ERROR:")
 
             print(ex)
 
             print(response)
 
             return {
-                "target_architecture":
-                    response,
-
+                "target_architecture": response,
                 "recommendations": [],
-
-                "expected_improvements": {}
+                "expected_improvements": {},
             }

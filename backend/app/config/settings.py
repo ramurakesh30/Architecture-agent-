@@ -6,29 +6,14 @@ load_dotenv()
 
 
 class Settings:
+    AI_PROVIDER = os.getenv("AI_PROVIDER", "ollama")
 
-    AI_PROVIDER = os.getenv(
-        "AI_PROVIDER",
-        "ollama"
-    )
+    OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
 
-    OLLAMA_MODEL = os.getenv(
-        "OLLAMA_MODEL",
-        "llama3.2:3b"
-    )
-
-    EMBEDDING_MODEL = os.getenv(
-        "EMBEDDING_MODEL",
-        "all-MiniLM-L6-v2"
-    )
-    DATABASE_URL = os.getenv(
-        "DATABASE_URL"
-    )
-    SECRET_KEY = os.getenv(
-        "SECRET_KEY"
-    )
+    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    SECRET_KEY = os.getenv("SECRET_KEY")
     SUPPORTED_EXTENSIONS = {
-
         ".py",
         ".yaml",
         ".yml",
@@ -44,5 +29,5 @@ class Settings:
         ".go",
         ".sql",
         ".md",
-        ".dockerfile"
+        ".dockerfile",
     }

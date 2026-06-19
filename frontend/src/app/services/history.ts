@@ -1,14 +1,19 @@
 import { authHeaders } from "@/src/lib/auth";
 
+import {
+  API_URL
+} from "@/src/lib/config";
+
 const API_BASE =
-  "http://localhost:8000/api/v1";
+  `${API_URL}/api/v1`;
+
 
 export async function
-getAssessmentHistory() {
+getAssessmentHistory( page: number = 1): Promise<any[]>{
 
   const response =
     await fetch(
-      `${API_BASE}/reports`,
+      `${API_BASE}/reports?page=${page}`,
       {
         headers:
           authHeaders()

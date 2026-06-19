@@ -1,9 +1,9 @@
-from pydantic import BaseModel
 from typing import List
+
+from pydantic import BaseModel
 
 
 class TerraformConfig(BaseModel):
-
     public_s3_bucket: bool = False
 
     encryption_enabled: bool = False

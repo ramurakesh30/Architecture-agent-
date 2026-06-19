@@ -31,6 +31,12 @@ import {
 import ChatAssistant
 from "@/src/components/ui/ChatAssistant";
 
+import ArchitectureDiagram
+from "@/src/components/ui/ArchitectureDiagram";
+
+import ArchitectureRedesign
+from "@/src/components/ui/ArchitectureRedesign";
+
 export default function
 AssessmentDetailsPage() {
 
@@ -210,9 +216,15 @@ AssessmentDetailsPage() {
         report.findings && (
 
             <FindingsTable
-            findings={
-                report.findings
-            }
+
+                findings={
+                    report.findings
+                }
+
+                reportId={
+                    params.id as string
+                }
+
             />
 
         )
@@ -277,6 +289,20 @@ AssessmentDetailsPage() {
         )
         }
         <ChatAssistant
+
+            reportId={
+                params.id as string
+            }
+
+        />
+        <ArchitectureDiagram
+
+            reportId={
+                params.id as string
+            }
+
+        />
+        <ArchitectureRedesign
 
             reportId={
                 params.id as string
