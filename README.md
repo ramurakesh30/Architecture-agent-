@@ -26,7 +26,9 @@ AI-powered Architecture Governance Platform built with FastAPI, Next.js, Postgre
 
 ## Overview
 
-Architecture Agent analyzes infrastructure repositories and generates architecture assessments, security findings, remediation recommendations, architecture diagrams, and AI-powered redesign suggestions.
+Architecture Agent is an AI-powered Architecture Governance Platform that combines infrastructure analysis, architecture visualization, Retrieval-Augmented Generation (RAG), and local Large Language Models (LLMs) to provide actionable architecture insights and recommendations.
+
+The platform analyzes infrastructure repositories, stores assessment reports, retrieves historical architecture context, and leverages AI to generate architecture redesigns, remediation guidance, and interactive architecture conversations.
 
 The platform helps engineers and architects understand:
 
@@ -118,6 +120,33 @@ Generate actionable remediation guidance for:
 ### PDF Export
 
 Export assessment reports as PDF documents.
+
+---
+
+## AI Capabilities
+
+### Retrieval-Augmented Generation (RAG)
+
+The platform uses Retrieval-Augmented Generation (RAG) to provide context-aware responses.
+
+Assessment reports are persisted and retrieved as contextual knowledge for AI-powered features such as:
+
+- Architecture Chat Assistant
+- Architecture Redesign Advisor
+- Remediation Recommendations
+- Historical Assessment Analysis
+
+### LangChain Integration
+
+LangChain is used to orchestrate AI workflows and manage interactions with local LLMs running through Ollama.
+
+Capabilities include:
+
+- Prompt orchestration
+- Context injection
+- Retrieval workflows
+- Architecture reasoning
+- Recommendation generation
 
 ---
 
